@@ -4,7 +4,7 @@
   "description": "Web Assembly App zum Üben von Vokabeln",
   "main": "index.js",
   "scripts": {
-    "build": "npx asc assembly/index.ts -o build/vocab.wasm -t build/vocab.wat -b raw --exportRuntime",
+    "build": "npx asc assembly/index.ts -o build/vocab.wasm -t build/vocab.wat --exportRuntime",
     "start": "python3 -m http.server 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

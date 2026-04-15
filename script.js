@@ -1,5 +1,3 @@
-import { instantiate } from './build/vocab.js';
-
 let wasm;
 let currentIndex = 0;
 let correctCount = 0;
@@ -14,10 +12,38 @@ const progress = document.getElementById('progress');
 const correctLabel = document.getElementById('correct');
 const wrongLabel = document.getElementById('wrong');
 
+function liftString(pointer) {
+  if (!pointer) return '';
+  const memory = new Uint32Array(wasm.memory.buffer);
+  const length = memory[pointer - 4 >>> 2];
+  const u16 = new Uint16Array(wasm.memory.buffer);
+  const start = pointer >>> 1;
+  const end = (pointer + length) >>> 1;
+  let string = '';
+  let pos = start;
+  while (end - pos > 1024) {
+    string += String.fromCharCode(...u16.subarray(pos, pos + 1024));
+    pos += 1024;
+  }
+  return string + String.fromCharCode(...u16.subarray(pos, end));
+}
+
+function newString(value) {
+  const length = value.length;
+  const pointer = wasm.__new(length << 1, 2);
+  const u16 = new Uint16Array(wasm.memory.buffer);
+  let offset = pointer >>> 1;
+  for (let i = 0; i < length; i++) {
+    u16[offset + i] = value.charCodeAt(i);
+  }
+  return pointer;
+}
+
 function nextQuestion() {
   if (maxIndex === 0) return;
   currentIndex = Math.floor(Math.random() * maxIndex);
-  questionLabel.textContent = wasm.getEnglish(currentIndex);
+  const questionPtr = wasm.getEnglish(currentIndex);
+  questionLabel.textContent = liftString(questionPtr);
   progress.textContent = `Karte ${currentIndex + 1} / ${maxIndex}`;
   answerInput.value = '';
   feedback.textContent = '';
@@ -32,7 +58,14 @@ function updateCounters() {
 async function loadWasm() {
   const response = await fetch('build/vocab.wasm');
   const bytes = await response.arrayBuffer();
-  wasm = await instantiate(bytes);
+  const result = await WebAssembly.instantiate(bytes, {
+    env: {
+      abort(_msg, _file, line, col) {
+        console.error('abort called at ' + line + ':' + col);
+      }
+    }
+  });
+  wasm = result.instance.exports;
   maxIndex = wasm.maxIndex();
   nextQuestion();
 }
@@ -45,13 +78,15 @@ checkButton.addEventListener('click', () => {
     feedback.style.color = '#b91c1c';
     return;
   }
-  const correct = wasm.checkGerman(currentIndex, answer);
+  const answerPtr = newString(answer);
+  const correct = wasm.checkGerman(currentIndex, answerPtr);
   if (correct) {
     feedback.textContent = '✅ Richtig! Weiter zur nächsten Karte.';
     feedback.style.color = '#15803d';
     correctCount += 1;
   } else {
-    feedback.textContent = `❌ Falsch. Richtige Antwort: ${wasm.getGerman(currentIndex)}`;
+    const correctPtr = wasm.getGerman(currentIndex);
+    feedback.textContent = `❌ Falsch. Richtige Antwort: ${liftString(correctPtr)}`;
     feedback.style.color = '#b91c1c';
     wrongCount += 1;
   }
