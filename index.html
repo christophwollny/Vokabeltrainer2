@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vokabeltrainer WebAssembly</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f4f7fb; color: #1f2937; }
+    .container { width: min(620px, 92vw); background: white; border-radius: 20px; box-shadow: 0 24px 80px rgba(15,23,42,.12); padding: 32px; }
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    p { margin: 0 0 24px; color: #4b5563; }
+    .card { padding: 24px; border: 1px solid #e5e7eb; border-radius: 18px; background: #f9fafb; margin-bottom: 20px; }
+    .card strong { font-size: 1.5rem; display: block; margin-bottom: 16px; }
+    input, button { width: 100%; font-size: 1rem; border-radius: 12px; border: 1px solid #d1d5db; padding: 14px 16px; }
+    button { margin-top: 16px; background: #2563eb; color: white; border-color: transparent; cursor: pointer; transition: background .2s ease; }
+    button:hover { background: #1d4ed8; }
+    .feedback { min-height: 1.5rem; margin-top: 14px; font-weight: 700; }
+    .info { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+    .info span { background: #eef2ff; border-radius: 999px; padding: 10px 14px; font-size: .95rem; text-align: center; }
+    #answer { margin-bottom: 0; }
+    .link { font-size: 0.94rem; color: #2563eb; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Vokabeltrainer</h1>
+    <p>Englisch → Deutsch Karteikarten. Gib die richtige Übersetzung ein und prüfe deine Antwort.</p>
+    <div class="info">
+      <span id="progress">Lade...</span>
+      <span id="correct">Richtig: 0</span>
+      <span id="wrong">Falsch: 0</span>
+    </div>
+    <div class="card">
+      <strong id="question">Bitte warten …</strong>
+      <input id="answer" type="text" placeholder="Übersetzung eingeben" autocomplete="off" />
+      <button id="check">Prüfen</button>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <a class="link" href="https://github.com/christophwollny/Vokabeltrainer2" target="_blank">Repository auf GitHub ansehen</a>
+  </div>
+  <script type="module" src="script.js"></script>

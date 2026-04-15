@@ -1,0 +1,26 @@
+{
+  "name": "vokabeltrainer2",
+  "version": "1.0.0",
+  "description": "Web Assembly App zum Üben von Vokabeln",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx asc assembly/index.ts -o build/vocab.wasm -t build/vocab.wat -b raw --exportRuntime",
+    "start": "python3 -m http.server 8080",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christophwollny/Vokabeltrainer2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/christophwollny/Vokabeltrainer2/issues"
+  },
+  "homepage": "https://github.com/christophwollny/Vokabeltrainer2#readme",
+  "devDependencies": {
+    "assemblyscript": "^0.28.14"
+  }
+}
